@@ -41,7 +41,7 @@ class Habitat(Model):
             x = random.randrange(self.grid.width)
             y = random.randrange(self.grid.height)
             pos = [x, y]
-            a = Yeast(self.next_id(), 1, self, pos, 200, 70)
+            a = Yeast(self.next_id(), 1, self, pos, 6.66, 45)
             self.schedule.add(a)
             self.grid.place_agent(a, (x, y))
             self.microbe_count_by_species[1] += 1
@@ -50,7 +50,7 @@ class Habitat(Model):
             x = random.randrange(self.grid.width)
             y = random.randrange(self.grid.height)
             pos = [x, y]
-            a = Alga(self.next_id(), 2, self, pos, 1200, 600)
+            a = Alga(self.next_id(), 2, self, pos, 56.87, 270)
             self.schedule.add(a)
             self.grid.place_agent(a, (x, y))   
             self.microbe_count_by_species[2] += 1
@@ -71,7 +71,6 @@ class Habitat(Model):
         # if (self.schedule.steps > 20):
         #     self.running = False
         
-        print(self.pH)
 
     def calculate_pH(self):
         return max(0, min(14, self.pH + -10**-6 * self.microbe_count_by_species[1] + 10**-6 * self.microbe_count_by_species[2]))

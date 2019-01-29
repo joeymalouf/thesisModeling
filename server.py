@@ -26,7 +26,7 @@ def agent_portrayal(agent):
 grid = CanvasGrid(agent_portrayal, 200, 200, 800, 800)
 
 
-molecule_dtos = [molecule_dto("C6H12O6", 1), molecule_dto("KNO2", 1), molecule_dto("C02", 0), molecule_dto("NH3", 0)]
+molecule_dtos = [molecule_dto("C6H12O6", 1000), molecule_dto("KNO2", 100), molecule_dto("C02", 0), molecule_dto("NH3", 0)]
 
 
 chart = ChartModule(
