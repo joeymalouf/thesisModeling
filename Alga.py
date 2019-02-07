@@ -17,7 +17,7 @@ class Alga(Agent):
 
     def ingest(self):
         C02_ingested = min(self.model.molecule_arrays[2][self.pos[0]][self.pos[1]], 1) * (.7 + (self.get_pH()*.3))
-        NO2_ingested = min(self.model.molecule_arrays[1][self.pos[0]][self.pos[1]], 1) * (.7 + (self.get_pH()*.3))
+        NO2_ingested = min(self.model.molecule_arrays[1][self.pos[0]][self.pos[1]], 20)/20 * (.7 + (self.get_pH()*.3))
         self.C += C02_ingested 
         self.N += NO2_ingested
         self.model.molecule_arrays[1][self.pos[0]][self.pos[1]] -= NO2_ingested
@@ -27,12 +27,12 @@ class Alga(Agent):
         # "C6H12O6" = 0; "KNO2" = 1; "C02" = 2; "NH3" = 3
         # alga excrete 2 
     def decay(self):
-        self.C = self.C - .3
-        self.N = self.N - .3 * .121
+        self.C = self.C - .1
+        self.N = self.N - .1 * .121
 
     def excrete(self, NO2_ingested):
-        self.model.molecule_arrays[3][self.pos[0]][self.pos[1]] += (.7 + (self.get_pH()*.3))
-        print("excrete alga: ", (.7 + (self.get_pH()*.3)))
+        self.model.molecule_arrays[3][self.pos[0]][self.pos[1]] += (.7 + (self.get_pH()*.3)) * .121
+        # print("excrete alga: ", (.7 + (self.get_pH()*.3)))
     
     def die(self):
         self.model.grid.remove_agent(self)

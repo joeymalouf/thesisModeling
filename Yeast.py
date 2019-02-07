@@ -20,7 +20,7 @@ class Yeast(Agent):
 
     def ingest(self):
         NH3_ingested = min(self.model.molecule_arrays[3][self.pos[0]][self.pos[1]], 1) * (.7 + (self.get_pH()*.3))
-        C6H12O6_ingested = min(self.model.molecule_arrays[0][self.pos[0]][self.pos[1]], 1) * (.7 + (self.get_pH()*.3))
+        C6H12O6_ingested = min(self.model.molecule_arrays[0][self.pos[0]][self.pos[1]], 222)/222 * (.7 + (self.get_pH()*.3))
         self.C += C6H12O6_ingested 
         self.N += NH3_ingested
 
@@ -32,12 +32,12 @@ class Yeast(Agent):
         # alga excrete 2 4
 
     def decay(self):
-        self.C = self.C - .3
-        self.N = self.N - .3 * .148
+        self.C = self.C - .1/6
+        self.N = self.N - .1 * .148 /6
 
     def excrete(self, C6H12O6_ingested):
-        self.model.molecule_arrays[2][self.pos[0]][self.pos[1]] += (.7 + (self.get_pH()*.3))
-        print("excrete yeast: ", (.7 + (self.get_pH()*.3)))
+        self.model.molecule_arrays[2][self.pos[0]][self.pos[1]] += (.7 + (self.get_pH()*.3)) * (2.0/3.0) /6
+        # print("excrete yeast: ", (.7 + (self.get_pH()*.3)))
     
     def die(self):
         self.model.grid.remove_agent(self)

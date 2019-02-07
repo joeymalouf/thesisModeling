@@ -11,18 +11,22 @@ import scipy.signal
 from fast_space import FastMultiGrid
 
 class Habitat(Model):
-    def __init__(self, yeast, alga, molecule_dtos, width, height, pH):
+    def __init__(self, yeast, alga, molecule_dtos, width, height, pH, steps):
         super().__init__()
         self.yeast = yeast
         self.alga = alga
         self.grid = FastMultiGrid(width, height, False)
         self.schedule = RandomActivation(self)
         self.running = True
+        self.steps = steps
 
         self.pH = pH
         self.filterA = np.array([[.0125, .0125, .0125],
                 [.0125, .9, .0125],
                 [.0125, .0125, .0125]])
+        self.filterB = np.array([[.025, .025, .025],
+                [.025, .8, .025],
+                [.025, .025, .025]])
 
         self.molecule_arrays = np.zeros((len(molecule_dtos),width,height))
         self.molecules = molecule_dtos
@@ -41,7 +45,9 @@ class Habitat(Model):
             x = random.randrange(self.grid.width)
             y = random.randrange(self.grid.height)
             pos = [x, y]
-            a = Yeast(self.next_id(), 1, self, pos, 6.66, 45)
+            N = random.randint(4, 10)
+            C = random.randint(22, 66)
+            a = Yeast(self.next_id(), 1, self, pos, N, C)
             self.schedule.add(a)
             self.grid.place_agent(a, (x, y))
             self.microbe_count_by_species[1] += 1
@@ -50,7 +56,9 @@ class Habitat(Model):
             x = random.randrange(self.grid.width)
             y = random.randrange(self.grid.height)
             pos = [x, y]
-            a = Alga(self.next_id(), 2, self, pos, 56.87, 270)
+            N = random.randint(28, 85)
+            C = random.randint(135, 405)
+            a = Alga(self.next_id(), 2, self, pos, N, C)
             self.schedule.add(a)
             self.grid.place_agent(a, (x, y))   
             self.microbe_count_by_species[2] += 1
@@ -65,15 +73,19 @@ class Habitat(Model):
     def step(self):
         self.pH = self.calculate_pH()
         for i in range(len(self.molecule_arrays)):
-            self.molecule_arrays[i] = scipy.signal.convolve2d(self.molecule_arrays[i], self.filterA, mode='same', boundary='wrap')
+            self.molecule_arrays[i] = scipy.signal.convolve2d(self.molecule_arrays[i], self.filterB, mode='same', boundary='wrap')
         self.datacollector.collect(self)
         self.schedule.step()
-        # if (self.schedule.steps > 20):
-        #     self.running = False
+        if self.schedule.steps % 100 == 0:
+            print("Step: ", self.schedule.steps)
+            print("Alga: ", self.microbe_count_by_species[2])
+            print("Yeast: ", self.microbe_count_by_species[1])
+        if (self.schedule.steps > self.steps):
+            self.running = False
         
 
     def calculate_pH(self):
-        return max(0, min(14, self.pH + -10**-6 * self.microbe_count_by_species[1] + 10**-6 * self.microbe_count_by_species[2]))
+        return max(0, min(14, self.pH + -10**-6 * self.microbe_count_by_species[1] /6 + 10**-6 * self.microbe_count_by_species[2]))
 
 def species1_count(model):
     return model.microbe_count_by_species[1]
