@@ -15,29 +15,32 @@ class Yeast(Agent):
         # self.O = O #.596
         # self.H = H #1.748
         self.C_to_reproduce = 90
-        self.N_to_reproduce = 90*.148
+        self.N_to_reproduce = 13.32 # 90 * .148
 
 
     def ingest(self):
-        NH3_ingested = min(self.model.molecule_arrays[3][self.pos[0]][self.pos[1]], 1) * (.7 + (self.get_pH()*.3))
-        C6H12O6_ingested = min(self.model.molecule_arrays[0][self.pos[0]][self.pos[1]], 222)/222 * (.7 + (self.get_pH()*.3))
-        self.C += C6H12O6_ingested 
+        C6H12O6_ingested = min(self.model.molecule_arrays[0][self.pos[0]][self.pos[1]] * 50, 1) * max(.4, self.get_pH())
+        # .00592
+        NH3_ingested = min(self.model.molecule_arrays[3][self.pos[0]][self.pos[1]] * 2000, 1) * max(.4, self.get_pH())
+        self.C += C6H12O6_ingested *.333
         self.N += NH3_ingested
+        # 14,400 steps total
+        # print(C6H12O6_ingested, " ", NH3_ingested)
+        self.model.molecule_arrays[0][self.pos[0]][self.pos[1]] -= C6H12O6_ingested/6000
+        self.model.molecule_arrays[3][self.pos[0]][self.pos[1]] -= NH3_ingested/14400
 
-        self.model.molecule_arrays[0][self.pos[0]][self.pos[1]] -= C6H12O6_ingested
-        self.model.molecule_arrays[3][self.pos[0]][self.pos[1]] -= NH3_ingested
         self.excrete(C6H12O6_ingested)
 
         # "C6H12O6" = 0; "KNO2" = 1; "C02" = 2; "NH3" = 3
         # alga excrete 2 4
 
     def decay(self):
-        self.C = self.C - .1/6
-        self.N = self.N - .1 * .148 /6
+        self.C = self.C - .0167
+        self.N = self.N -  .00247
 
     def excrete(self, C6H12O6_ingested):
-        self.model.molecule_arrays[2][self.pos[0]][self.pos[1]] += (.7 + (self.get_pH()*.3)) * (2.0/3.0) /6
-        # print("excrete yeast: ", (.7 + (self.get_pH()*.3)))
+        self.model.molecule_arrays[2][self.pos[0]][self.pos[1]] += C6H12O6_ingested*(.667)/6000
+        # print("excrete yeast: ", (C6H12O6_ingested*(.667)/36000))
     
     def die(self):
         self.model.grid.remove_agent(self)
@@ -58,6 +61,7 @@ class Yeast(Agent):
         return
 
     def step(self):
+        # print("Yeast: ", self.get_pH())
         self.ingest()
         self.decay()
         if self.C <= 0 or self.N <= 0:

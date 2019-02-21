@@ -1,11 +1,21 @@
+import faulthandler
+faulthandler.enable()
 import numpy as np
-import matplotlib.pyplot as plt
-import math
+import scipy.signal
+import time
 
-x = np.linspace(0, 14, 1000)
-y = -.08*((x-4)**2) + 1
+molecule_arrays = np.zeros((32000,32000))
 
-print(y)
-plt.plot(x,y)
-plt.ylim(ymin=0)
-plt.show()
+
+print(molecule_arrays)
+
+yay = time.time()
+x = 0
+while x < 1:
+    molecule_arrays = molecule_arrays*.4
+    x+=1
+    print(x,'\r')
+
+print(time.time()-yay)
+
+print(molecule_arrays)

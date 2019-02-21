@@ -4,21 +4,21 @@ from server import server
 import matplotlib.pyplot as plt
 
 # "C6H12O6" = 0; "KNO2" = 1; "C02" = 2; "NH3" = 3
+# M. P. Azuara, P. J. Aparicio, Plant Physiol. 71, 286–290 (1983)
 
 molecule_dtos = []
-molecule_dtos.append(molecule_dto("C6H12O6", 10000))
-molecule_dtos.append(molecule_dto("KNO2", 10000))
-molecule_dtos.append(molecule_dto("C02", 6))
+molecule_dtos.append(molecule_dto("C6H12O6", .02))
+molecule_dtos.append(molecule_dto("KNO2", .002))
+molecule_dtos.append(molecule_dto("C02", .001))
 molecule_dtos.append(molecule_dto("NH3", 0))
 
 
-H = Habitat(480, 80, molecule_dtos, 300, 300, 6.8, 3500)
+H = Habitat(40, 40, molecule_dtos, 300, 300, 6.8, 10000)
 H.run_model()
 
 data = H.datacollector.get_model_vars_dataframe()
 
 yeast = data["Yeast"].values
-yeast = yeast/6
 alga = data["Alga"].values
 pH = data["pH"].values
 C6H12O6 = data["C6H12O6"].values
@@ -35,6 +35,7 @@ a = plt.subplot(3,2,1)
 plt.title("Microbes")
 plt.ylabel("microbes")
 plt.xlabel("Step")
+plt.yscale("log")
 plt.plot(yeast, 'orange')
 plt.plot(alga, 'g')
 b = plt.subplot(3,2,2)
